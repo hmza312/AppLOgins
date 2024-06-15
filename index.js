@@ -11,6 +11,8 @@ import cookieParser from "cookie-parser";
 import request from "request";
 import axios from "axios";
 import imageToBase64 from "image-to-base64";
+import ig from "instagram-scraping";
+import { requireSignIn } from "./middlewares/auth_middleware.js";
 const InstagramStrategy = Instagram.Strategy;
 const GoogleStrategys = GoogleStrategy.OAuth2Strategy;
 env.config();
@@ -62,7 +64,7 @@ app.use("/api/v1/auth", authRoutes);
 app.get("/", async (req, res) => {
   // const sessionData = req.session;
   // console.log(sessionData);
-  res.render("views/pages/index.ejs");
+  res.render("pages/index.ejs");
 });
 passport.serializeUser(function (user, cb) {
   cb(null, user);
@@ -131,7 +133,7 @@ const getBase64 = async (link) => {
   return `data:image/jpeg;base64,${base64}`;
 };
 
-app.get("/get-videos", async (req, res) => {
+app.get("/get-videos", requireSignIn, async (req, res) => {
   try {
     const query = req.query.search;
     const url = `  https://www.googleapis.com/youtube/v3/search?key=AIzaSyB-TpUlPx2ZMcmfqIC-9MgZL088W5Xcfts&type=video&&part=snippet&q=${query}`;
@@ -143,6 +145,47 @@ app.get("/get-videos", async (req, res) => {
     next(err);
   }
 });
+
+// app.get("/get-instagram", async (req, res) => {
+//   try {
+//     var url = `https://api.instagram.com/v1/users/backy/media/recent/?client_id=${process.env.INSTA_CLIENT_ID}`;
+
+//     request(url, function (err, response, body) {
+//       // var dataGram = JSON.parse(body);
+//       res.send(body);
+//       // res.render("show", dataGram);
+//     });
+//   } catch (err) {
+//     // next(err);
+//   }
+// });
+
+// app.post("/get-videosTiktok", async (req, res) => {
+//   try {
+//     const headers = {
+//       "Content-Type": "application/json",
+//       Authorization: "Bearer act.example12345Example12345Example",
+//     };
+//     const data = { max_count: 20 };
+//     const url = `https://open.tiktokapis.com/v2/video/list/?fields=id,title,video_description,duration,cover_image_url,embed_link`;
+//     axios
+//       .post(url, data, {
+//         headers: headers,
+//       })
+//       .then((response) => {
+//         res.send({
+//           data: response,
+//         });
+//       })
+//       .catch((error) => {
+//         res.send({
+//           data: error,
+//         });
+//       });
+//   } catch (err) {
+//     res.send(err);
+//   }
+// });
 
 app.post("/tiktokaccesstoken", async (req, res) => {
   try {
