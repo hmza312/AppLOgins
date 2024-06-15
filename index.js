@@ -192,3 +192,4 @@ app.post("/tiktokaccesstoken", async (req, res) => {
 app.listen(PORT, async () => {
   console.log(`Application is running on the ${PORT}`);
 });
+export default app;
