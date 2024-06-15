@@ -60,9 +60,9 @@ app.use("/api/v1/auth", authRoutes);
 
 // Default Route
 app.get("/", async (req, res) => {
-  const sessionData = req.session;
-  console.log(sessionData);
-  res.render("pages/index.ejs");
+  // const sessionData = req.session;
+  // console.log(sessionData);
+  res.render("views/pages/index.ejs");
 });
 passport.serializeUser(function (user, cb) {
   cb(null, user);
