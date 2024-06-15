@@ -3,9 +3,9 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "home care project",
-  "main": "server.js",
+  "main": "index.js",
   "scripts": {
-    "server": "nodemon server.js",
+    "server": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
