@@ -93,7 +93,8 @@ passport.use(
     {
       clientID: process.env.INSTA_CLIENT_ID,
       clientSecret: process.env.INSTA_CLIENT_SECRET,
-      callbackURL: process.env.IMSTA_CALLBACK_URL,
+      callbackURL:
+        "https://applogins-production.up.railway.app/api/v1/auth/instagram/callback",
     },
     (accessToken, refreshToken, profile, done) => {
       console.log(accessToken, refreshToken, profile);
