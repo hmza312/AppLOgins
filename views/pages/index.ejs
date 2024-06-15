@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Facebook Node Authentication</title>
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/css/materialize.min.css"
+    />
+    <style>
+      .facebook {
+        background-color: #3b5998 !important;
+        color: #fff !important;
+      }
+      .fa-facebook-f:before,
+      .fa-facebook:before {
+        content: "\f09a";
+      }
+    </style>
+  </head>
+
+  <body>
+    <nav class="light-blue lighten-1" role="navigation">
+      <div class="nav-wrapper container">
+        <a id="logo-container" href="#" class="brand-logo"
+          >Node Authentication</a
+        >
+      </div>
+    </nav>
+    <div class="section no-pad-bot" id="index-banner">
+      <div class="container">
+        <br /><br />
+
+        <div class="row center">
+          <div class="col s6 offset-s3">
+            <div class="card">
+              <div class="card-content">
+                <span class="card-title"
+                  >Facebook Login using Node and passport</span
+                >
+              </div>
+              <div class="card-action">
+                <a
+                  href="/api/v1/auth/facebook"
+                  class="waves-effect waves-light btn social facebook"
+                >
+                  <i class="fa fa-facebook"></i> Sign in with facebook
+                </a>
+              </div>
+            </div>
+          </div>
+          <div class="col s6 offset-s3">
+            <div class="card">
+              <div class="card-content">
+                <span class="card-title"
+                  >Instagram Login using Node and passport</span
+                >
+              </div>
+              <div class="card-action">
+                <a
+                  href="/api/v1/auth/instagram"
+                  class="waves-effect waves-light btn social facebook"
+                >
+                  <i class="fa fa-instagram"></i> Sign in with Instagram
+                </a>
+              </div>
+            </div>
+          </div>
+          <div class="col s6 offset-s3">
+            <div class="card">
+              <div class="card-content">
+                <span class="card-title"
+                  >Tiktok Login using Node and passport</span
+                >
+              </div>
+              <div class="card-action">
+                <a
+                  href="/oauth"
+                  class="waves-effect waves-light btn social facebook"
+                >
+                  <i class="fa fa-tiktok"></i> Sign in with Tiktok
+                </a>
+              </div>
+            </div>
+          </div>
+          <div class="col s6 offset-s3">
+            <div class="card">
+              <div class="card-content">
+                <h1><span class="fa fa-lock"></span> Social Authentication</h1>
+              </div>
+              <div class="card-action">
+                <p>Login or Register with:</p>
+                <a href="/api/v1/auth/google" class="btn btn-danger"
+                  ><span class="fa fa-google"></span> SignIn with Google</a
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
