@@ -1,3 +1,4 @@
+import JWT from "jsonwebtoken";
 export const requireSignIn = async (req, res, next) => {
   try {
     const token = req.headers.authorization;

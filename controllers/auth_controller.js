@@ -141,13 +141,14 @@ export const logout = async (req, res) => {
 };
 
 export const authenticatedUser = async (req, res) => {
-  const token = req.session.user;
-  console.log(token);
+  // const token = req.session.user;
+  const tokenVa = req.headers.authorization;
+  console.log(tokenVa);
   try {
-    if (!token) {
+    if (!tokenVa) {
       return res.status(401).send("Unauthorized request");
     }
-    // let tokenSplit = token.split(" ")[1];
+    let token = tokenVa.split(" ")[1];
     let payload = jwt.verify(token, process.env.JWT_SECRET);
     if (!payload) {
       return res.status(401).send("Unauthorized request");

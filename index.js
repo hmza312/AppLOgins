@@ -5,7 +5,7 @@ import authRoutes from "./routes/auth_routes.js";
 import passport from "passport";
 import FacebookStrategy from "passport-facebook";
 import GoogleStrategy from "passport-google-oauth";
-import Instagram from "passport-instagram";
+import InstagramStrategy from "passport-instagram";
 import session from "express-session";
 import cookieParser from "cookie-parser";
 import request from "request";
@@ -13,7 +13,7 @@ import axios from "axios";
 import imageToBase64 from "image-to-base64";
 import ig from "instagram-scraping";
 import { requireSignIn } from "./middlewares/auth_middleware.js";
-const InstagramStrategy = Instagram.Strategy;
+// const InstagramStrategy = Instagram.Strategy;
 const GoogleStrategys = GoogleStrategy.OAuth2Strategy;
 env.config();
 const app = express();
@@ -82,7 +82,7 @@ passport.use(
       callbackURL: process.env.FACEBOOK_CALLBACK_URL,
     },
     function (accessToken, refreshToken, profile, done) {
-      console.log(accessToken, refreshToken, profile);
+      // console.log(accessToken, refreshToken, profile);
       // req.session.user = accessToken;
       return done(null, profile);
     }
@@ -91,13 +91,12 @@ passport.use(
 passport.use(
   new InstagramStrategy(
     {
-      clientID: process.env.INSTA_CLIENT_ID,
-      clientSecret: process.env.INSTA_CLIENT_SECRET,
-      callbackURL:
-        "https://applogins-production.up.railway.app/api/v1/auth/instagram/callback",
+      clientID: process.env.FACEBOOK_CLIENT_ID,
+      clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
+      callbackURL: "http://localhost:4000",
     },
     (accessToken, refreshToken, profile, done) => {
-      console.log(accessToken, refreshToken, profile);
+      // console.log(accessToken, refreshToken, profile);
       return done(null, profile);
     }
   )
@@ -110,8 +109,8 @@ passport.use(
       callbackURL: "http://localhost:4000/api/v1/auth/google/callback",
     },
     function (accessToken, refreshToken, profile, done) {
-      console.log(accessToken, refreshToken, profile);
-      console.log(profile);
+      // console.log(accessToken, refreshToken, profile);
+      // console.log(profile);
       return done(null, profile);
     }
   )
@@ -149,44 +148,53 @@ app.get("/get-videos", requireSignIn, async (req, res) => {
 
 // app.get("/get-instagram", async (req, res) => {
 //   try {
-//     var url = `https://api.instagram.com/v1/users/backy/media/recent/?client_id=${process.env.INSTA_CLIENT_ID}`;
+//     var link = `https://api.instagram.com/oauth/authorize?client_id=${process.env.INSTA_CLIENT_ID}
+//   &redirect_uri=${process.env.IMSTA_CALLBACK_URL}
+//   &scope=user_profile,user_media
+//   &response_type=code
+//   &state=1 `;
+//     console.log(link);
+//     const res = await axios.get(link);
+//     // var url = `https://api.instagram.com/v1/users/backy/media/recent/?client_id=${process.env.INSTA_CLIENT_ID}`;
 
-//     request(url, function (err, response, body) {
-//       // var dataGram = JSON.parse(body);
-//       res.send(body);
-//       // res.render("show", dataGram);
-//     });
+//     // request(url, function (err, response, body) {
+//     //   // var dataGram = JSON.parse(body);
+//     //   res.send(body);
+//     //   // res.render("show", dataGram);
+//     // });
+//     res.send(res);
+//     // console.log(res);
 //   } catch (err) {
 //     // next(err);
 //   }
 // });
 
-// app.post("/get-videosTiktok", async (req, res) => {
-//   try {
-//     const headers = {
-//       "Content-Type": "application/json",
-//       Authorization: "Bearer act.example12345Example12345Example",
-//     };
-//     const data = { max_count: 20 };
-//     const url = `https://open.tiktokapis.com/v2/video/list/?fields=id,title,video_description,duration,cover_image_url,embed_link`;
-//     axios
-//       .post(url, data, {
-//         headers: headers,
-//       })
-//       .then((response) => {
-//         res.send({
-//           data: response,
-//         });
-//       })
-//       .catch((error) => {
-//         res.send({
-//           data: error,
-//         });
-//       });
-//   } catch (err) {
-//     res.send(err);
-//   }
-// });
+app.post("/get-videosTiktok", async (req, res) => {
+  try {
+    const headers = {
+      "Content-Type": "application/json",
+      Authorization: "Bearer act.example12345Example12345Example",
+    };
+    const data = { max_count: 20 };
+    const url = `https://open.tiktokapis.com/v2/video/list/?fields=id,title,video_description,duration,cover_image_url,embed_link`;
+    axios
+      .post(url, data, {
+        headers: headers,
+      })
+      .then((response) => {
+        res.send({
+          data: response,
+        });
+      })
+      .catch((error) => {
+        res.send({
+          data: error,
+        });
+      });
+  } catch (err) {
+    res.send(err);
+  }
+});
 
 app.post("/tiktokaccesstoken", async (req, res) => {
   try {
