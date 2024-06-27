@@ -16,6 +16,7 @@ import { requireSignIn } from "./middlewares/auth_middleware.js";
 // const InstagramStrategy = Instagram.Strategy;
 const GoogleStrategys = GoogleStrategy.OAuth2Strategy;
 env.config();
+const redirectURI = "http://localhost:4000/auth//tiktok/callback";
 const app = express();
 app.set("view engine", "ejs");
 const allowedOrigins = ["http://localhost:3001", "http://localhost:3000"];
@@ -132,42 +133,79 @@ const getBase64 = async (link) => {
   const base64 = await imageToBase64(link);
   return `data:image/jpeg;base64,${base64}`;
 };
-
-app.get("/get-videos", requireSignIn, async (req, res) => {
+const getdata = async (items) => {
+  var videosData = [];
+  for (let i = 0; i < items.length; i++) {
+    console.log(items[i].id.videoId);
+    const url1 = `https://www.googleapis.com/youtube/v3/videos?key=AIzaSyB-TpUlPx2ZMcmfqIC-9MgZL088W5Xcfts&type=video&&part=contentDetails,snippet&id=${items[i].id.videoId}`;
+    const response1 = await axios.get(url1);
+    // console.log(`https://www.youtube.com/watch?v=${item.id.videoId}`);
+    const obj = {
+      url: `https://www.youtube.com/watch?v=${items[i].id.videoId}`,
+      snippet: response1.data.items,
+    };
+    // console.log(obj);
+    videosData.push(obj);
+  }
+  return videosData;
+};
+// requireSignIn
+app.get("/get-videos", async (req, res) => {
   try {
     const query = req.query.search;
     const url = `  https://www.googleapis.com/youtube/v3/search?key=AIzaSyB-TpUlPx2ZMcmfqIC-9MgZL088W5Xcfts&type=video&&part=snippet&q=${query}`;
     const response = await axios.get(url);
+    const videosData = await getdata(response.data.items);
+    // console.log(videosData);
     res.send({
-      data: response.data.items,
+      data: videosData,
     });
   } catch (err) {
-    next(err);
+    // next(err);
+  }
+});
+app.get("/posts/:username", async (req, res) => {
+  console.log(req.params.username);
+  try {
+    // Get user ID from username
+    const userId = await getUserId(req.params.username);
+
+    // Fetch recent posts by user ID
+    const posts = await fetchUserPosts(userId);
+
+    res.json(posts);
+  } catch (error) {
+    console.error("Error fetching posts:", error.message);
+    res.status(500).json({ error: "Failed to fetch posts" });
   }
 });
 
-// app.get("/get-instagram", async (req, res) => {
-//   try {
-//     var link = `https://api.instagram.com/oauth/authorize?client_id=${process.env.INSTA_CLIENT_ID}
-//   &redirect_uri=${process.env.IMSTA_CALLBACK_URL}
-//   &scope=user_profile,user_media
-//   &response_type=code
-//   &state=1 `;
-//     console.log(link);
-//     const res = await axios.get(link);
-//     // var url = `https://api.instagram.com/v1/users/backy/media/recent/?client_id=${process.env.INSTA_CLIENT_ID}`;
+// Function to get Instagram user ID from username
+async function getUserId(username) {
+  try {
+    const response = await axios.get(
+      `https://graph.instagram.com/v12.0/${username}?fields=id&access_token=${process.env.INSTAGRAM_ACCESS_TOKEN}`
+    );
+    console.log(response);
+    return response.data.id;
+  } catch (error) {
+    throw new Error(`Error getting user ID for ${username}: ${error.message}`);
+  }
+}
 
-//     // request(url, function (err, response, body) {
-//     //   // var dataGram = JSON.parse(body);
-//     //   res.send(body);
-//     //   // res.render("show", dataGram);
-//     // });
-//     res.send(res);
-//     // console.log(res);
-//   } catch (err) {
-//     // next(err);
-//   }
-// });
+// Function to fetch user's recent posts
+async function fetchUserPosts(userId) {
+  try {
+    const response = await axios.get(
+      `https://graph.instagram.com/v12.0/${userId}/media?fields=id,caption,media_type,media_url,permalink,timestamp&access_token=${process.env.INSTAGRAM_ACCESS_TOKEN}`
+    );
+    return response.data.data;
+  } catch (error) {
+    throw new Error(
+      `Error fetching posts for user ID ${userId}: ${error.message}`
+    );
+  }
+}
 
 app.post("/get-videosTiktok", async (req, res) => {
   try {
@@ -195,52 +233,71 @@ app.post("/get-videosTiktok", async (req, res) => {
     res.send(err);
   }
 });
+app.get("/auth/tiktok", (req, res) => {
+  res.redirect(
+    `https://open-api.tiktok.com/platform/oauth/connect/?client_id=${
+      process.env.TIKTOK_CLIENT_KEY
+    }&redirect_uri=${encodeURIComponent(
+      redirectURI
+    )}&response_type=code&scope=user.info`
+  );
+});
 
-app.post("/tiktokaccesstoken", async (req, res) => {
+// Route for handling OAuth callback
+app.get("/auth//tiktok/callback", async (req, res) => {
+  const code = req.query.code;
+
   try {
-    const { code } = req.body;
-    const decode = decodeURI(code);
-    const tokenEndpoint = "https://open.tiktokapis.com/v2/oauth/token/";
-    const params = {
-      client_key: `${process.env.TIKTOK_CLIENT_KEY}`,
-      client_secret: ` ${process.env.TIKTOK_CLIENT_SECRET}`,
-      code: decode,
-      grant_type: "authorization_code",
-      redirect_uri: ` ${process.env.TIK_CALLBACK_URL}`,
-    };
+    // Exchange code for access token
+    const accessToken = await exchangeCodeForAccessToken(code);
 
-    const response = await axios.post(
-      tokenEndpoint,
-      querystring.stringify(params),
-      {
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-          "Cache-Control": "no-cache",
-        },
-      }
-    );
-    if (response.data.access_token) {
-      const allvideosdata = await axios.post(
-        "https://open.tiktokapis.com/v2/video/list/?fields=id,title,video_description,duration,cover_image_url,embed_link",
-        {
-          max_count: 20,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${response.data.access_token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
+    // Use the accessToken to fetch user data or perform other actions
+    console.log("Access token:", accessToken);
 
-      console.log(allvideosdata.data.data.videos); //Lists all videos of user along with other details
-      res.send(allvideosdata.data.data.videos);
-    }
+    res.send("Successfully authenticated with TikTok!");
   } catch (error) {
-    console.error("Error during callback:", error.message);
-    res.status(500).send("An error occurred during the login process.");
+    console.error("Error exchanging code for access token:", error.message);
+    res.status(500).json({ error: "Failed to authenticate with TikTok" });
   }
 });
+
+// Function to exchange authorization code for access token
+async function exchangeCodeForAccessToken(code) {
+  try {
+    const response = await axios.post(
+      "https://open-api.tiktok.com/platform/oauth/access_token",
+      querystring.stringify({
+        client_id: process.env.TIKTOK_CLIENT_KEY,
+        client_secret: process.env.TIKTOK_CLIENT_SECRET,
+        code: code,
+        grant_type: "authorization_code",
+        redirect_uri: redirectURI,
+      })
+    );
+
+    return response.data.access_token;
+  } catch (error) {
+    throw new Error(`Error exchanging code for access token: ${error.message}`);
+  }
+}
+app.get("/video/:username", async (req, res) => {
+  const username = req.params.username;
+  console.log(username);
+  // const embedCode = generateTikTokEmbed(username); // Generate embed code here
+  const resp = await axios.get(
+    `https://www.tiktok.com/oembed?url=https://www.tiktok.com/@${username}/video/7054879716615933210`
+  );
+  // console.log(resp.data);
+  res.send(resp.data);
+  // Render the page with embedded TikTok video
+  // res.render("pages/video.ejs", resp.data.html);
+});
+
+// Example function to generate TikTok embed code
+async function generateTikTokEmbed(username) {
+  // Example embed code (replace with actual TikTok embed code)
+  return `<iframe src="https://www.tiktok.com/@${username}/video/7054879716615933210" width="100%" height="600" style="border:none;" allowfullscreen></iframe>`;
+}
 app.listen(PORT, async () => {
   console.log(`Application is running on the ${PORT}`);
 });

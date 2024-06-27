@@ -174,7 +174,7 @@ router.get("/instagram/callback", async (req, res) => {
         client_id: process.env.INSTA_CLIENT_ID,
         client_secret: process.env.INSTA_CLIENT_SECRET,
         grant_type: "authorization_code",
-        redirect_uri: "http://localhost:4000",
+        redirect_uri: process.env.IMSTA_CALLBACK_URL,
         code: code,
       })
     );
