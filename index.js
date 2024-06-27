@@ -244,7 +244,7 @@ app.get("/auth/tiktok", (req, res) => {
 });
 
 // Route for handling OAuth callback
-app.get("/auth//tiktok/callback", async (req, res) => {
+app.get("/auth/tiktok/callback", async (req, res) => {
   const code = req.query.code;
 
   try {
