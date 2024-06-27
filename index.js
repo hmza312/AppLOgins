@@ -42,6 +42,7 @@ app.use(cookieParser());
 const APP_ID = process.env.FACEBOOK_CLIENT_ID;
 const APP_SECRET = process.env.FACEBOOK_CLIENT_SECRET;
 const REDIRECT_URI = process.env.FACEBOOK_CALLBACK_URL;
+const REDIRECT_URI_TITOK = process.env.TIK_CALLBACK_URL;
 
 const PORT = process.env.PORT;
 app.use(express.json());
@@ -234,33 +235,44 @@ app.post("/get-videosTiktok", async (req, res) => {
   }
 });
 app.get("/auth/tiktok", (req, res) => {
-  res.redirect(
-    `https://open-api.tiktok.com/platform/oauth/connect/?client_id=${
-      process.env.TIKTOK_CLIENT_KEY
-    }&redirect_uri=${encodeURIComponent(
-      redirectURI
-    )}&response_type=code&scope=user.info`
-  );
+  const authUrl = `https://open-api.tiktok.com/platform/oauth/connect?client_key=${process.env.TIKTOK_CLIENT_KEY}&response_type=code&scope=user.info.basic&state=state&redirect_uri=${REDIRECT_URI_TITOK}`;
+  res.redirect(authUrl);
 });
 
-// Route for handling OAuth callback
 app.get("/auth/tiktok/callback", async (req, res) => {
-  const code = req.query.code;
+  const { code } = req.query;
 
   try {
-    // Exchange code for access token
-    const accessToken = await exchangeCodeForAccessToken(code);
+    const tokenResponse = await axios.post(
+      "https://open-api.tiktok.com/oauth/access_token/",
+      qs.stringify({
+        client_key: process.env.TIKTOK_CLIENT_KEY,
+        client_secret: process.env.TIKTOK_CLIENT_SECRET,
+        code,
+        grant_type: "authorization_code",
+        redirect_uri: REDIRECT_URI_TITOK,
+      })
+    );
 
-    // Use the accessToken to fetch user data or perform other actions
-    console.log("Access token:", accessToken);
+    const accessToken = tokenResponse.data.data.access_token;
 
-    res.send("Successfully authenticated with TikTok!");
+    // Fetch user info with the access token
+    const userInfoResponse = await axios.get(
+      "https://open-api.tiktok.com/user/info/",
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+
+    const userInfo = userInfoResponse.data.data;
+    res.send(userInfo);
   } catch (error) {
-    console.error("Error exchanging code for access token:", error.message);
-    res.status(500).json({ error: "Failed to authenticate with TikTok" });
+    console.error(error);
+    res.status(500).send("Authentication failed");
   }
 });
-
 // Function to exchange authorization code for access token
 async function exchangeCodeForAccessToken(code) {
   try {
