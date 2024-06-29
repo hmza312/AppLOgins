@@ -149,6 +149,8 @@ passport.use(
     },
     function (accessToken, refreshToken, profile, done) {
       // Save or use the user profile here
+      // localStorage.setItem("aaaa", accessToken);
+      // res.s
       console.log(accessToken);
       return done(null, profile);
     }
@@ -166,7 +168,7 @@ app.get(
   passport.authenticate("tiktok", { failureRedirect: "/" }),
   function (req, res) {
     // Successful authentication, redirect home.
-    res.redirect("/");
+    res.redirect("http://localhost:4000");
   }
 );
 // app.get("/oauth", (req, res) => {
@@ -259,7 +261,9 @@ async function fetchUserPosts(userId) {
   }
 }
 
-app.post("/get-videosTiktok", async (req, res) => {
+app.get("/get-videosTiktok", async (req, res) => {
+  const data = localStorage.getItem("aaaa");
+  console.log(data);
   try {
     const headers = {
       "Content-Type": "application/json",
@@ -300,40 +304,40 @@ app.get("/oauth", (req, res) => {
   res.redirect(url);
 });
 
-app.get("/auth/tiktok/callback", async (req, res) => {
-  const { code } = req.query;
+// app.get("/auth/tiktok/callback", async (req, res) => {
+//   const { code } = req.query;
 
-  try {
-    const tokenResponse = await axios.post(
-      "https://open-api.tiktok.com/oauth/access_token/",
-      qs.stringify({
-        client_key: process.env.TIKTOK_CLIENT_KEY,
-        client_secret: process.env.TIKTOK_CLIENT_SECRET,
-        code,
-        grant_type: "authorization_code",
-        redirect_uri: REDIRECT_URI_TITOK,
-      })
-    );
+//   try {
+//     const tokenResponse = await axios.post(
+//       "https://open-api.tiktok.com/oauth/access_token/",
+//       qs.stringify({
+//         client_key: process.env.TIKTOK_CLIENT_KEY,
+//         client_secret: process.env.TIKTOK_CLIENT_SECRET,
+//         code,
+//         grant_type: "authorization_code",
+//         redirect_uri: REDIRECT_URI_TITOK,
+//       })
+//     );
 
-    const accessToken = tokenResponse.data.data.access_token;
+//     const accessToken = tokenResponse.data.data.access_token;
 
-    // Fetch user info with the access token
-    const userInfoResponse = await axios.get(
-      "https://open-api.tiktok.com/user/info/",
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      }
-    );
+//     // Fetch user info with the access token
+//     const userInfoResponse = await axios.get(
+//       "https://open-api.tiktok.com/user/info/",
+//       {
+//         headers: {
+//           Authorization: `Bearer ${accessToken}`,
+//         },
+//       }
+//     );
 
-    const userInfo = userInfoResponse.data.data;
-    res.send(userInfo);
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("Authentication failed");
-  }
-});
+//     const userInfo = userInfoResponse.data.data;
+//     res.send(userInfo);
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).send("Authentication failed");
+//   }
+// });
 // Function to exchange authorization code for access token
 async function exchangeCodeForAccessToken(code) {
   try {
