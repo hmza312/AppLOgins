@@ -250,11 +250,11 @@ app.get("/error", async function (req, res) {
 app.get(
   "/auth/tiktok/callback",
   passport.authenticate("tiktok", {
-    failureRedirect: "http://localhost:4000/error",
+    failureRedirect: "/error",
   }),
   function (req, res) {
     // Successful authentication, redirect home.
-    res.redirect("http://localhost:4000/success");
+    res.redirect("/success");
   }
 );
 // app.get("/oauth", (req, res) => {
