@@ -148,8 +148,9 @@ passport.use(
       codeChallengeMethod: "S256",
       codeChallenge: challenge.code_challenge,
     },
-    async function (accessToken, refreshToken, profile, done) {
+    async function (accessToken, done) {
       try {
+        console.log(accessToken, "accessToken");
         // Fetch user profile using access token
         const response = await axios.get(
           "https://sandbox-open-api.tiktok.com/oauth/userinfo/",
@@ -159,7 +160,7 @@ passport.use(
             },
           }
         );
-
+        console.log(response, "response");
         const userProfile = response.data.data;
 
         profile.id = userProfile.open_id;
