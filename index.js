@@ -141,11 +141,6 @@ passport.use(
       clientSecret: TIKTOK_CLIENT_SECRET,
       callbackURL:
         "https://applogins-production.up.railway.app/auth/tiktok/callback",
-      scope: ["user.info.basic"],
-      state: true,
-
-      codeChallengeMethod: "S256",
-      codeChallenge: challenge.code_challenge,
     },
     async function (accessToken, refreshToken, profile, done) {
       // Save or use the user profile here
@@ -157,15 +152,23 @@ passport.use(
     }
   )
 );
-app.get("/auth/tiktok", (req, res, next) => {
-  generatePKCE(); // Generate a new PKCE challenge for each login attempt
+
+app.get(
+  "/auth/tiktok",
   passport.authenticate("tiktok", {
-    codeChallenge: challenge.code_challenge,
-    codeChallengeMethod: "S256",
-  })(req, res, next);
-});
+    scope: ["user.info.basic"],
+  })
+);
+// app.get(
+//   "/auth/tiktok/callback",
+//   passport.authenticate("tiktok", { failureRedirect: "/" }),
+//   function (req, res) {
+//     // Successful authentication, redirect home.
+//     res.redirect("/");
+//   }
+// );
 app.get("/success", async function (req, res) {
-  console.log(req.data);
+  console.log(req);
   // const { name, email } = req.user._json;
   // const { id } = req.user;
   // // console.log(name, id, email);
@@ -204,10 +207,52 @@ app.get("/success", async function (req, res) {
 
   // res.status(200).send(req.user);
 });
+app.get("/error", async function (req, res) {
+  console.log(req);
+  // const { name, email } = req.user._json;
+  // const { id } = req.user;
+  // // console.log(name, id, email);
+  try {
+    res.send(
+      `<h1>Errrorororo!</h1><a href="/auth/tiktok">Login with TikTok</a>`
+    );
+    //   const [existingUser] = await db.execute(
+    //     "SELECT * FROM users WHERE email = ?",
+    //     [email]
+    //   );
+    //   if (existingUser.length > 0) {
+    //     return res.status(400).json({ message: "Email is already taken." });
+    //   }
+    //   // Hash the password
+    //   const hashedPassword = "";
+    //   const emailForServer = email === undefined ? "" : email;
+    //   // Insert the new user into the database
+    //   const user = await db.execute(
+    //     "INSERT INTO users (email, password,username,googleId) VALUES (?, ?,?,?)",
+    //     [emailForServer, hashedPassword, name, id || ""]
+    //   );
+    //   const token = jwt.sign({ _id: user[0].insertId }, process.env.JWT_SECRET, {
+    //     expiresIn: "8d",
+    //   });
+    //   // res.status(201).json({
+    //   //   success: true,
+    //   //   token,
+    //   //   message: "Registration successful.",
+    //   // });
+    // res.render("pages/success.ejs", {
+    //   user: req.user, // get the user out of session and pass to template
+    // });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+
+  // res.status(200).send(req.user);
+});
 app.get(
   "/auth/tiktok/callback",
   passport.authenticate("tiktok", {
-    failureRedirect: "http://localhost:4000/success",
+    failureRedirect: "http://localhost:4000/error",
   }),
   function (req, res) {
     // Successful authentication, redirect home.
