@@ -162,117 +162,152 @@ passport.use(
   )
 );
 
-app.get("/auth/tiktok", (req, res, next) => {
-  generatePKCE(); // Generate a new PKCE challenge for each login attempt
-  passport.authenticate("tiktok", {
-    codeChallenge: challenge.code_challenge,
-    codeChallengeMethod: "S256",
-  })(req, res, next);
-});
-app.get("/success", async function (req, res) {
-  console.log(req.data);
-  // const { name, email } = req.user._json;
-  // const { id } = req.user;
-  // // console.log(name, id, email);
-  try {
-    res.send(`<h1>Welcome!</h1><a href="/auth/tiktok">Login with TikTok</a>`);
-    //   const [existingUser] = await db.execute(
-    //     "SELECT * FROM users WHERE email = ?",
-    //     [email]
-    //   );
-    //   if (existingUser.length > 0) {
-    //     return res.status(400).json({ message: "Email is already taken." });
-    //   }
-    //   // Hash the password
-    //   const hashedPassword = "";
-    //   const emailForServer = email === undefined ? "" : email;
-    //   // Insert the new user into the database
-    //   const user = await db.execute(
-    //     "INSERT INTO users (email, password,username,googleId) VALUES (?, ?,?,?)",
-    //     [emailForServer, hashedPassword, name, id || ""]
-    //   );
-    //   const token = jwt.sign({ _id: user[0].insertId }, process.env.JWT_SECRET, {
-    //     expiresIn: "8d",
-    //   });
-    //   // res.status(201).json({
-    //   //   success: true,
-    //   //   token,
-    //   //   message: "Registration successful.",
-    //   // });
-    // res.render("pages/success.ejs", {
-    //   user: req.user, // get the user out of session and pass to template
-    // });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ success: false, message: "Internal Server Error" });
-  }
-
-  // res.status(200).send(req.user);
-});
-app.get("/error", async function (req, res) {
-  // console.log(req);
-  // const { name, email } = req.user._json;
-  // const { id } = req.user;
-  // // console.log(name, id, email);
-  try {
-    res.send(
-      `<h1>Errrorororo!</h1><a href="/auth/tiktok">Login with TikTok</a>`
-    );
-    //   const [existingUser] = await db.execute(
-    //     "SELECT * FROM users WHERE email = ?",
-    //     [email]
-    //   );
-    //   if (existingUser.length > 0) {
-    //     return res.status(400).json({ message: "Email is already taken." });
-    //   }
-    //   // Hash the password
-    //   const hashedPassword = "";
-    //   const emailForServer = email === undefined ? "" : email;
-    //   // Insert the new user into the database
-    //   const user = await db.execute(
-    //     "INSERT INTO users (email, password,username,googleId) VALUES (?, ?,?,?)",
-    //     [emailForServer, hashedPassword, name, id || ""]
-    //   );
-    //   const token = jwt.sign({ _id: user[0].insertId }, process.env.JWT_SECRET, {
-    //     expiresIn: "8d",
-    //   });
-    //   // res.status(201).json({
-    //   //   success: true,
-    //   //   token,
-    //   //   message: "Registration successful.",
-    //   // });
-    // res.render("pages/success.ejs", {
-    //   user: req.user, // get the user out of session and pass to template
-    // });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ success: false, message: "Internal Server Error" });
-  }
-
-  // res.status(200).send(req.user);
-});
-app.get(
-  "/auth/tiktok/callback",
-  passport.authenticate("tiktok", {
-    failureRedirect: "/error",
-  }),
-  function (req, res) {
-    // Successful authentication, redirect home.
-    res.redirect("/success");
-  }
-);
-// app.get("/oauth", (req, res) => {
-//   const csrfState = Math.random().toString(36).substring(2);
-//   res.cookie("csrfState", csrfState, { maxAge: 60000 });
-//   let url = "https://www.tiktok.com/v2/auth/authorize/";
-//   // the following params need to be in `application/x-www-form-urlencoded` format.
-//   url += `?client_key=${process.env.TIKTOK_CLIENT_KEY}`;
-//   url += "&scope=user.info.basic,user.info.profile,user.info.stats,video.list";
-//   url += "&response_type=code";
-//   url += `&redirect_uri=${process.env.TIK_CALLBACK_URL}`;
-//   url += "&state=" + csrfState;
-//   res.json({ url: url });
+// app.get("/auth/tiktok", (req, res, next) => {
+//   generatePKCE(); // Generate a new PKCE challenge for each login attempt
+//   passport.authenticate("tiktok", {
+//     codeChallenge: challenge.code_challenge,
+//     codeChallengeMethod: "S256",
+//   })(req, res, next);
 // });
+// app.get("/success", async function (req, res) {
+//   console.log(req.data);
+//   // const { name, email } = req.user._json;
+//   // const { id } = req.user;
+//   // // console.log(name, id, email);
+//   try {
+//     res.send(`<h1>Welcome!</h1><a href="/auth/tiktok">Login with TikTok</a>`);
+//     //   const [existingUser] = await db.execute(
+//     //     "SELECT * FROM users WHERE email = ?",
+//     //     [email]
+//     //   );
+//     //   if (existingUser.length > 0) {
+//     //     return res.status(400).json({ message: "Email is already taken." });
+//     //   }
+//     //   // Hash the password
+//     //   const hashedPassword = "";
+//     //   const emailForServer = email === undefined ? "" : email;
+//     //   // Insert the new user into the database
+//     //   const user = await db.execute(
+//     //     "INSERT INTO users (email, password,username,googleId) VALUES (?, ?,?,?)",
+//     //     [emailForServer, hashedPassword, name, id || ""]
+//     //   );
+//     //   const token = jwt.sign({ _id: user[0].insertId }, process.env.JWT_SECRET, {
+//     //     expiresIn: "8d",
+//     //   });
+//     //   // res.status(201).json({
+//     //   //   success: true,
+//     //   //   token,
+//     //   //   message: "Registration successful.",
+//     //   // });
+//     // res.render("pages/success.ejs", {
+//     //   user: req.user, // get the user out of session and pass to template
+//     // });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ success: false, message: "Internal Server Error" });
+//   }
+
+//   // res.status(200).send(req.user);
+// });
+// app.get("/error", async function (req, res) {
+//   // console.log(req);
+//   // const { name, email } = req.user._json;
+//   // const { id } = req.user;
+//   // // console.log(name, id, email);
+//   try {
+//     res.send(
+//       `<h1>Errrorororo!</h1><a href="/auth/tiktok">Login with TikTok</a>`
+//     );
+//     //   const [existingUser] = await db.execute(
+//     //     "SELECT * FROM users WHERE email = ?",
+//     //     [email]
+//     //   );
+//     //   if (existingUser.length > 0) {
+//     //     return res.status(400).json({ message: "Email is already taken." });
+//     //   }
+//     //   // Hash the password
+//     //   const hashedPassword = "";
+//     //   const emailForServer = email === undefined ? "" : email;
+//     //   // Insert the new user into the database
+//     //   const user = await db.execute(
+//     //     "INSERT INTO users (email, password,username,googleId) VALUES (?, ?,?,?)",
+//     //     [emailForServer, hashedPassword, name, id || ""]
+//     //   );
+//     //   const token = jwt.sign({ _id: user[0].insertId }, process.env.JWT_SECRET, {
+//     //     expiresIn: "8d",
+//     //   });
+//     //   // res.status(201).json({
+//     //   //   success: true,
+//     //   //   token,
+//     //   //   message: "Registration successful.",
+//     //   // });
+//     // res.render("pages/success.ejs", {
+//     //   user: req.user, // get the user out of session and pass to template
+//     // });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ success: false, message: "Internal Server Error" });
+//   }
+
+//   // res.status(200).send(req.user);
+// });
+// app.get(
+//   "/auth/tiktok/callback",
+//   passport.authenticate("tiktok", {
+//     failureRedirect: "/error",
+//   }),
+//   function (req, res) {
+//     // Successful authentication, redirect home.
+//     res.redirect("/success");
+//   }
+// );
+
+app.get("/auth/tiktok", (req, res) => {
+  const state = Math.random().toString(36).substring(7);
+  req.session.state = state;
+  const authUrl = `https://open-api.tiktok.com/platform/oauth/connect?client_key=${TIKTOK_CLIENT_ID}&response_type=code&scope=user.info.basic&redirect_uri=${encodeURIComponent(
+    REDIRECT_URI_TITOK
+  )}&state=${state}`;
+  res.redirect(authUrl);
+});
+
+app.get("/auth/tiktok/callback", async (req, res) => {
+  const { code, state } = req.query;
+  if (state !== req.session.state) {
+    return res.status(403).send("State mismatch error");
+  }
+  try {
+    const tokenResponse = await axios.post(
+      "https://open-api.tiktok.com/oauth/access_token",
+      querystring.stringify({
+        client_key: TIKTOK_CLIENT_ID,
+        client_secret: TIKTOK_CLIENT_SECRET,
+        code: code,
+        grant_type: "authorization_code",
+        redirect_uri: REDIRECT_URI_TITOK,
+      }),
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      }
+    );
+    const { access_token } = tokenResponse.data.data;
+    const userProfileResponse = await axios.get(
+      "https://open-api.tiktok.com/oauth/userinfo/",
+      {
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+        },
+      }
+    );
+    const profile = userProfileResponse.data.data;
+    res.send(`<h1>Hello ${profile.display_name}</h1>`);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Failed to fetch user profile");
+  }
+});
 const getBase64 = async (link) => {
   const base64 = await imageToBase64(link);
   return `data:image/jpeg;base64,${base64}`;
