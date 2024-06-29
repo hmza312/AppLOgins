@@ -147,12 +147,13 @@ passport.use(
       codeChallengeMethod: "S256",
       codeChallenge: challenge.code_challenge,
     },
-    function (accessToken, refreshToken, profile, done) {
+    async function (accessToken, refreshToken, profile, done) {
       // Save or use the user profile here
-      // localStorage.setItem("aaaa", accessToken);
-      // res.s
+      const user = await db.execute("INSERT INTO token (token) VALUES (?)", [
+        accessToken || "",
+      ]);
       console.log(accessToken);
-      return done(null, accessToken);
+      return done(null, profile);
     }
   )
 );
@@ -164,7 +165,7 @@ app.get("/auth/tiktok", (req, res, next) => {
   })(req, res, next);
 });
 app.get("/success", async function (req, res) {
-  console.log(req);
+  console.log(req.data);
   // const { name, email } = req.user._json;
   // const { id } = req.user;
   // // console.log(name, id, email);
