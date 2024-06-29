@@ -152,7 +152,7 @@ passport.use(
       // localStorage.setItem("aaaa", accessToken);
       // res.s
       console.log(accessToken);
-      return done(null, profile);
+      return done(null, accessToken);
     }
   )
 );
@@ -164,11 +164,12 @@ app.get("/auth/tiktok", (req, res, next) => {
   })(req, res, next);
 });
 app.get("/success", async function (req, res) {
-  console.log(req.user);
+  console.log(req);
   // const { name, email } = req.user._json;
   // const { id } = req.user;
   // // console.log(name, id, email);
   try {
+    res.send(`<h1>Welcome!</h1><a href="/auth/tiktok">Login with TikTok</a>`);
     //   const [existingUser] = await db.execute(
     //     "SELECT * FROM users WHERE email = ?",
     //     [email]
