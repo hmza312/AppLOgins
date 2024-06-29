@@ -156,40 +156,40 @@ passport.use(
       if (!profile) {
         return done(new Error("Failed to fetch user profile"));
       }
-      console.log(profile);
+      console.log(accessToken);
       return done(null, profile);
     }
   )
 );
 
-TikTokStrategys.prototype.userProfile = function (accessToken, done) {
-  console.log(accessToken);
-  this._oauth2.get(
-    "https://open-api.tiktok.com/userinfo",
-    accessToken,
-    function (err, body, res) {
-      if (err) {
-        console.error("Failed to fetch user profile:");
-      }
+// TikTokStrategys.prototype.userProfile = function (accessToken, done) {
+//   console.log(accessToken);
+//   this._oauth2.get(
+//     "https://open-api.tiktok.com/userinfo",
+//     accessToken,
+//     function (err, body, res) {
+//       if (err) {
+//         console.error("Failed to fetch user profile:");
+//       }
 
-      try {
-        const json = JSON.parse(body);
-        const profile = {
-          provider: "tiktok",
-          id: json.data.open_id,
-          username: json.data.display_name,
-          displayName: json.data.nickname,
-          _raw: body,
-          _json: json,
-        };
+//       try {
+//         const json = JSON.parse(body);
+//         const profile = {
+//           provider: "tiktok",
+//           id: json.data.open_id,
+//           username: json.data.display_name,
+//           displayName: json.data.nickname,
+//           _raw: body,
+//           _json: json,
+//         };
 
-        done(null, profile);
-      } catch (e) {
-        // done(e);
-      }
-    }
-  );
-};
+//         done(null, profile);
+//       } catch (e) {
+//         // done(e);
+//       }
+//     }
+//   );
+// };
 
 app.get("/auth/tiktok", (req, res, next) => {
   generatePKCE(); // Generate a new PKCE challenge for each login attempt
@@ -416,12 +416,13 @@ async function fetchUserPosts(userId) {
 }
 
 app.get("/get-videosTiktok", async (req, res) => {
-  const data = localStorage.getItem("aaaa");
-  console.log(data);
+  // const data = localStorage.getItem("aaaa");
+  // console.log(data);
   try {
     const headers = {
       "Content-Type": "application/json",
-      Authorization: "Bearer act.example12345Example12345Example",
+      Authorization:
+        "Bearer act.nhaqXqYrX6P5nmY2ZYmhaGaEGa4rxfCnA1P5anm7uVMxUrZgzh0yby8aPMFe!5949.va",
     };
     const data = { max_count: 20 };
     const url = `https://open.tiktokapis.com/v2/video/list/?fields=id,title,video_description,duration,cover_image_url,embed_link`;
