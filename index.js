@@ -142,11 +142,11 @@ passport.use(
       clientSecret: "8AiqOeDF3P1IZiTc2aKWcPR6Orz5lRnu",
       callbackURL:
         "https://applogins-production.up.railway.app/auth/tiktok/callback",
+      scope: ["user.info.basic"],
+      // state: true,
 
-      state: true,
-
-      codeChallengeMethod: "S256",
-      codeChallenge: challenge.code_challenge,
+      // codeChallengeMethod: "S256",
+      // codeChallenge: challenge.code_challenge,
     },
     async function (accessToken, done) {
       try {
@@ -203,13 +203,15 @@ passport.use(
 //   );
 // };
 
-app.get("/auth/tiktok", (req, res, next) => {
-  generatePKCE(); // Generate a new PKCE challenge for each login attempt
-  passport.authenticate("tiktok", {
-    codeChallenge: challenge.code_challenge,
-    codeChallengeMethod: "S256",
-  })(req, res, next);
-});
+// app.get("/auth/tiktok", (req, res, next) => {
+//   generatePKCE(); // Generate a new PKCE challenge for each login attempt
+//   passport.authenticate("tiktok", {
+//     codeChallenge: challenge.code_challenge,
+//     codeChallengeMethod: "S256",
+//   })(req, res, next);
+// });
+app.get("/auth/tiktok", passport.authenticate("tiktok"));
+
 app.get("/success", async function (req, res) {
   console.log(req.data);
   // const { name, email } = req.user._json;
