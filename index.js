@@ -153,10 +153,11 @@ passport.use(
       // const user = await db.execute("INSERT INTO token (token) VALUES (?)", [
       //   accessToken || "",
       // ]);
-      if (!profile) {
-        return done(new Error("Failed to fetch user profile"));
-      }
       console.log(accessToken);
+      if (!profile) {
+        console.log("Failed to fetch user profile");
+        // return done(new Error("Failed to fetch user profile"));
+      }
       return done(null, profile);
     }
   )
