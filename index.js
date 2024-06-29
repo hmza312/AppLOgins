@@ -235,8 +235,18 @@ app.post("/get-videosTiktok", async (req, res) => {
   }
 });
 app.get("/auth/tiktok", (req, res) => {
-  const authUrl = `https://open-api.tiktok.com/platform/oauth/connect?client_key=${process.env.TIKTOK_CLIENT_KEY}&response_type=code&scope=user.info.basic&state=state&redirect_uri=${REDIRECT_URI_TITOK}`;
-  res.redirect(authUrl);
+  // const authUrl = `https://open-api.tiktok.com/platform/oauth/connect?client_key=${process.env.TIKTOK_CLIENT_KEY}&response_type=code&scope=user.info.basic&redirect_uri=${REDIRECT_URI_TITOK}`;
+  const csrfState = Math.random().toString(36).substring(2);
+  res.cookie("csrfState", csrfState, { maxAge: 60000 });
+  let url = "https://www.tiktok.com/v2/auth/authorize/";
+  // the following params need to be in `application/x-www-form-urlencoded` format.
+  url += `?client_key=sbaw35nc82p5ft1qur`;
+  url += "&scope=user.info.basic";
+  url += "&response_type=code";
+  url += `&redirect_uri=https://applogins-production.up.railway.app/auth/tiktok/callback`;
+  url += "&state=" + csrfState;
+  // res.json({ url: url });
+  res.redirect(url);
 });
 
 app.get("/auth/tiktok/callback", async (req, res) => {
