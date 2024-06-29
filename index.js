@@ -11,10 +11,13 @@ import cookieParser from "cookie-parser";
 import request from "request";
 import axios from "axios";
 import imageToBase64 from "image-to-base64";
+import TikTokStrategy from "passport-tiktok-auth";
+import pkceChallenge from "pkce-challenge";
 import ig from "instagram-scraping";
 import { requireSignIn } from "./middlewares/auth_middleware.js";
 // const InstagramStrategy = Instagram.Strategy;
 const GoogleStrategys = GoogleStrategy.OAuth2Strategy;
+const TikTokStrategys = TikTokStrategy.Strategy;
 env.config();
 const redirectURI = "http://localhost:4000/auth//tiktok/callback";
 const app = express();
@@ -118,18 +121,66 @@ passport.use(
   )
 );
 
-app.get("/oauth", (req, res) => {
-  const csrfState = Math.random().toString(36).substring(2);
-  res.cookie("csrfState", csrfState, { maxAge: 60000 });
-  let url = "https://www.tiktok.com/v2/auth/authorize/";
-  // the following params need to be in `application/x-www-form-urlencoded` format.
-  url += `?client_key=${process.env.TIKTOK_CLIENT_KEY}`;
-  url += "&scope=user.info.basic,user.info.profile,user.info.stats,video.list";
-  url += "&response_type=code";
-  url += `&redirect_uri=${process.env.TIK_CALLBACK_URL}`;
-  url += "&state=" + csrfState;
-  res.json({ url: url });
+// TikTok app credentials
+const TIKTOK_CLIENT_ID = process.env.TIKTOK_CLIENT_KEY;
+const TIKTOK_CLIENT_SECRET = process.env.TIKTOK_CLIENT_SECRET;
+
+// Generate a PKCE challenge and verifier
+let challenge;
+const generatePKCE = () => {
+  const { code_verifier, code_challenge } = pkceChallenge();
+  challenge = { code_verifier, code_challenge };
+};
+generatePKCE();
+
+// Passport configuration
+passport.use(
+  new TikTokStrategys(
+    {
+      clientID: TIKTOK_CLIENT_ID,
+      clientSecret: TIKTOK_CLIENT_SECRET,
+      callbackURL:
+        "https://applogins-production.up.railway.app/auth/tiktok/callback",
+      scope: ["user.info.basic"],
+      state: true,
+
+      codeChallengeMethod: "S256",
+      codeChallenge: challenge.code_challenge,
+    },
+    function (accessToken, refreshToken, profile, done) {
+      // Save or use the user profile here
+      console.log(accessToken);
+      return done(null, profile);
+    }
+  )
+);
+app.get("/auth/tiktok", (req, res, next) => {
+  generatePKCE(); // Generate a new PKCE challenge for each login attempt
+  passport.authenticate("tiktok", {
+    codeChallenge: challenge.code_challenge,
+    codeChallengeMethod: "S256",
+  })(req, res, next);
 });
+app.get(
+  "/auth/tiktok/callback",
+  passport.authenticate("tiktok", { failureRedirect: "/" }),
+  function (req, res) {
+    // Successful authentication, redirect home.
+    res.redirect("/");
+  }
+);
+// app.get("/oauth", (req, res) => {
+//   const csrfState = Math.random().toString(36).substring(2);
+//   res.cookie("csrfState", csrfState, { maxAge: 60000 });
+//   let url = "https://www.tiktok.com/v2/auth/authorize/";
+//   // the following params need to be in `application/x-www-form-urlencoded` format.
+//   url += `?client_key=${process.env.TIKTOK_CLIENT_KEY}`;
+//   url += "&scope=user.info.basic,user.info.profile,user.info.stats,video.list";
+//   url += "&response_type=code";
+//   url += `&redirect_uri=${process.env.TIK_CALLBACK_URL}`;
+//   url += "&state=" + csrfState;
+//   res.json({ url: url });
+// });
 const getBase64 = async (link) => {
   const base64 = await imageToBase64(link);
   return `data:image/jpeg;base64,${base64}`;
@@ -234,17 +285,17 @@ app.post("/get-videosTiktok", async (req, res) => {
     res.send(err);
   }
 });
-app.get("/auth/tiktok", (req, res) => {
+app.get("/oauth", (req, res) => {
   // const authUrl = `https://open-api.tiktok.com/platform/oauth/connect?client_key=${process.env.TIKTOK_CLIENT_KEY}&response_type=code&scope=user.info.basic&redirect_uri=${REDIRECT_URI_TITOK}`;
   const csrfState = Math.random().toString(36).substring(2);
   res.cookie("csrfState", csrfState, { maxAge: 60000 });
   let url = "https://www.tiktok.com/v2/auth/authorize/";
   // the following params need to be in `application/x-www-form-urlencoded` format.
-  url += `?client_key=sbaw35nc82p5ft1qur`;
+  url += `?client_key=awcfverlqghe2cts`;
   url += "&scope=user.info.basic";
   url += "&response_type=code";
   url += `&redirect_uri=https://applogins-production.up.railway.app/auth/tiktok/callback`;
-  url += "&state=" + csrfState;
+  url += "&state=" + "state";
   // res.json({ url: url });
   res.redirect(url);
 });
