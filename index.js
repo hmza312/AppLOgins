@@ -156,11 +156,42 @@ passport.use(
       if (!profile) {
         return done(new Error("Failed to fetch user profile"));
       }
-      console.log(accessToken);
-      return done(null, accessToken);
+      console.log(profile);
+      return done(null, profile);
     }
   )
 );
+
+TikTokStrategys.prototype.userProfile = function (accessToken, done) {
+  this._oauth2.get(
+    "https://open-api.tiktok.com/userinfo",
+    accessToken,
+    function (err, body, res) {
+      if (err) {
+        console.error("Failed to fetch user profile:", err);
+        return done(
+          new InternalOAuthError("Failed to fetch user profile", err)
+        );
+      }
+
+      try {
+        const json = JSON.parse(body);
+        const profile = {
+          provider: "tiktok",
+          id: json.data.open_id,
+          username: json.data.display_name,
+          displayName: json.data.nickname,
+          _raw: body,
+          _json: json,
+        };
+
+        done(null, profile);
+      } catch (e) {
+        done(e);
+      }
+    }
+  );
+};
 
 app.get("/auth/tiktok", (req, res, next) => {
   generatePKCE(); // Generate a new PKCE challenge for each login attempt
