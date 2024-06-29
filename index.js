@@ -142,7 +142,7 @@ passport.use(
       clientSecret: TIKTOK_CLIENT_SECRET,
       callbackURL:
         "https://applogins-production.up.railway.app/auth/tiktok/callback",
-      scope: ["user.info.basic"],
+
       state: true,
 
       codeChallengeMethod: "S256",
@@ -150,9 +150,12 @@ passport.use(
     },
     async function (accessToken, refreshToken, profile, done) {
       // Save or use the user profile here
-      const user = await db.execute("INSERT INTO token (token) VALUES (?)", [
-        accessToken || "",
-      ]);
+      // const user = await db.execute("INSERT INTO token (token) VALUES (?)", [
+      //   accessToken || "",
+      // ]);
+      if (!profile) {
+        return done(new Error("Failed to fetch user profile"));
+      }
       console.log(accessToken);
       return done(null, accessToken);
     }
