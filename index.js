@@ -13,6 +13,7 @@ import axios from "axios";
 import imageToBase64 from "image-to-base64";
 import TikTokStrategy from "passport-tiktok-auth";
 import pkceChallenge from "pkce-challenge";
+import qs from "qs";
 import ig from "instagram-scraping";
 import { requireSignIn } from "./middlewares/auth_middleware.js";
 // const InstagramStrategy = Instagram.Strategy;
@@ -153,7 +154,7 @@ passport.use(
         accessToken || "",
       ]);
       console.log(accessToken);
-      return done(null, profile);
+      return done(null, accessToken);
     }
   )
 );
@@ -391,8 +392,8 @@ app.get("/oauth", (req, res) => {
 });
 
 // app.get("/auth/tiktok/callback", async (req, res) => {
+//   console.log(req.query);
 //   const { code } = req.query;
-
 //   try {
 //     const tokenResponse = await axios.post(
 //       "https://open-api.tiktok.com/oauth/access_token/",
