@@ -162,7 +162,8 @@ passport.use(
   )
 );
 
-TikTokStrategys.prototype.userProfile = function (accessToken, done) {
+TikTokStrategy.prototype.userProfile = function (accessToken, done) {
+  console.log(accessToken);
   this._oauth2.get(
     "https://open-api.tiktok.com/userinfo",
     accessToken,
@@ -184,7 +185,7 @@ TikTokStrategys.prototype.userProfile = function (accessToken, done) {
 
         done(null, profile);
       } catch (e) {
-        done(e);
+        // done(e);
       }
     }
   );
