@@ -267,7 +267,7 @@ app.get("/auth/tiktok", (req, res) => {
   req.session.state = state;
   const authUrl = `https://open-api.tiktok.com/platform/oauth/connect?client_key=${TIKTOK_CLIENT_ID}&response_type=code&scope=user.info.basic&redirect_uri=${encodeURIComponent(
     REDIRECT_URI_TITOK
-  )}&state=${state}`;
+  )}`;
   res.redirect(authUrl);
 });
 
