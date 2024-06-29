@@ -164,7 +164,7 @@ app.get("/auth/tiktok", (req, res, next) => {
   })(req, res, next);
 });
 app.get("/success", async function (req, res) {
-  console.log(req);
+  console.log(req.user);
   // const { name, email } = req.user._json;
   // const { id } = req.user;
   // // console.log(name, id, email);
@@ -176,11 +176,9 @@ app.get("/success", async function (req, res) {
     //   if (existingUser.length > 0) {
     //     return res.status(400).json({ message: "Email is already taken." });
     //   }
-
     //   // Hash the password
     //   const hashedPassword = "";
     //   const emailForServer = email === undefined ? "" : email;
-
     //   // Insert the new user into the database
     //   const user = await db.execute(
     //     "INSERT INTO users (email, password,username,googleId) VALUES (?, ?,?,?)",
@@ -189,15 +187,14 @@ app.get("/success", async function (req, res) {
     //   const token = jwt.sign({ _id: user[0].insertId }, process.env.JWT_SECRET, {
     //     expiresIn: "8d",
     //   });
-
     //   // res.status(201).json({
     //   //   success: true,
     //   //   token,
     //   //   message: "Registration successful.",
     //   // });
-    res.render("pages/success.ejs", {
-      user: req.user, // get the user out of session and pass to template
-    });
+    // res.render("pages/success.ejs", {
+    //   user: req.user, // get the user out of session and pass to template
+    // });
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, message: "Internal Server Error" });
