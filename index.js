@@ -168,11 +168,7 @@ TikTokStrategys.prototype.userProfile = function (accessToken, done) {
     accessToken,
     function (err, body, res) {
       if (err) {
-        console.error("Failed to fetch user profile:", err);
-        return done(
-          "failed"
-          // new InternalOAuthError("Failed to fetch user profile", err)
-        );
+        console.error("Failed to fetch user profile:");
       }
 
       try {
