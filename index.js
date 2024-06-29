@@ -87,13 +87,31 @@ passport.use(
       clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
       callbackURL: process.env.FACEBOOK_CALLBACK_URL,
     },
-    function (accessToken, refreshToken, profile, done) {
-      // console.log(accessToken, refreshToken, profile);
-      // req.session.user = accessToken;
-      return done(null, profile);
+    async function (accessToken, refreshToken, profile, done) {
+      try {
+        // Fetch user profile using access token
+        const response = await axios.get(
+          "https://sandbox-open-api.tiktok.com/oauth/userinfo/",
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
+
+        const userProfile = response.data.data;
+
+        profile.id = userProfile.open_id;
+        profile.displayName = userProfile.display_name;
+
+        return done(null, profile);
+      } catch (error) {
+        return done(error);
+      }
     }
   )
 );
+
 passport.use(
   new InstagramStrategy(
     {
