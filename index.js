@@ -469,7 +469,7 @@ app.get("/oauth", (req, res) => {
   url += "&scope=user.info.basic";
   url += "&response_type=code";
   url += `&redirect_uri=https://applogins-production.up.railway.app/auth/tiktok/callback`;
-  url += "&state=" + "state";
+  url += "&state=" + csrfState;
   // res.json({ url: url });
   res.redirect(url);
 });
