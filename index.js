@@ -465,13 +465,13 @@ app.get("/oauth", (req, res) => {
   res.cookie("csrfState", csrfState, { maxAge: 60000 });
   let url = "https://www.tiktok.com/v2/auth/authorize/";
   // the following params need to be in `application/x-www-form-urlencoded` format.
-  url += `?client_key=awcfverlqghe2cts`;
+  url += `?client_key=awz1ohwdkexsb81n`;
   url += "&scope=user.info.basic";
   url += "&response_type=code";
   url += `&redirect_uri=https://applogins-production.up.railway.app/auth/tiktok/callback`;
   url += "&state=" + "state";
-  // res.json({ url: url });
-  res.redirect(url);
+  res.json({ url: url });
+  // res.redirect(url);
 });
 
 app.get("/auth/tiktok/callback", async (req, res) => {
@@ -481,8 +481,8 @@ app.get("/auth/tiktok/callback", async (req, res) => {
     const tokenResponse = await axios.post(
       "https://open-api.tiktok.com/oauth/access_token/",
       qs.stringify({
-        client_key: "awcfverlqghe2cts",
-        client_secret: "JCYOkhwJfHcfB2nJytfs16wYCJfO0YJh",
+        client_key: "awz1ohwdkexsb81n",
+        client_secret: "5KYBp2q2fIR4VPGNh6lKhmFYGvkOLBEp",
         code,
         grant_type: "authorization_code",
         redirect_uri: REDIRECT_URI_TITOK,
