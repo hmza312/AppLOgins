@@ -549,8 +549,8 @@ async function generateTikTokEmbed(username) {
 passport.use(
   new TikTokStrategys(
     {
-      clientID: "awz1ohwdkexsb81n",
-      clientSecret: "5KYBp2q2fIR4VPGNh6lKhmFYGvkOLBEp",
+      clientID: "sbawgn4tfo494zf1k0",
+      clientSecret: "GZflBc5R4stEzzVgQVxPlJeab5r3rYuh",
       callbackURL:
         "https://applogins-production.up.railway.app/auth/tiktok/callback",
     },
