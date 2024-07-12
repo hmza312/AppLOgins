@@ -560,23 +560,24 @@ passport.use(
     }
   )
 );
-app.get("/auth/tiktok", passport.authenticate("tiktok"));
+// app.get("/auth/tiktok", passport.authenticate("tiktok"));
 
-app.get(
-  "/auth/tiktok/callback",
-  passport.authenticate("tiktok", { failureRedirect: "/" }),
-  (req, res) => {
-    // Successful authentication
-    res.redirect("/profile");
-  }
-);
+// app.get(
+//   "/auth/tiktok/callback",
+//   passport.authenticate("tiktok", { failureRedirect: "/" }),
+//   (req, res) => {
+//     // Successful authentication
+//     res.redirect("/profile");
+//   }
+// );
 
-app.get("/profile", (req, res) => {
-  if (!req.isAuthenticated()) {
-    return res.redirect("/");
-  }
-  res.send(`Hello ${req.user.displayName}`);
-});
+// app.get("/profile", (req, res) => {
+//   if (!req.isAuthenticated()) {
+//     return res.redirect("/");
+//   }
+//   res.send(`Hello ${req.user.displayName}`);
+// });
+
 app.listen(PORT, async () => {
   console.log(`Application is running on the ${PORT}`);
 });
