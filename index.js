@@ -465,10 +465,10 @@ app.get("/oauth", (req, res) => {
   res.cookie("csrfState", csrfState, { maxAge: 60000 });
   let url = "https://www.tiktok.com/v2/auth/authorize/";
   // the following params need to be in `application/x-www-form-urlencoded` format.
-  url += `?client_key=awz1ohwdkexsb81n`;
+  url += `?client_key=${process.env.TIKTOK_CLIENT_KEY}`;
   url += "&scope=user.info.basic";
   url += "&response_type=code";
-  url += `&redirect_uri=https://applogins-production.up.railway.app/auth/tiktok/callback`;
+  url += `&redirect_uri=${REDIRECT_URI_TITOK}`;
   url += "&state=" + "state";
   // res.json({ url: url });
   res.redirect(url);
@@ -481,8 +481,8 @@ app.get("/auth/tiktok/callback", async (req, res) => {
     const tokenResponse = await axios.post(
       "https://open-api.tiktok.com/oauth/access_token/",
       qs.stringify({
-        client_key: "awz1ohwdkexsb81n",
-        client_secret: "5KYBp2q2fIR4VPGNh6lKhmFYGvkOLBEp",
+        client_key: process.env.TIKTOK_CLIENT_KEY,
+        client_secret: process.env.TIKTOK_CLIENT_SECRET,
         code,
         grant_type: "authorization_code",
         redirect_uri: REDIRECT_URI_TITOK,
@@ -508,25 +508,7 @@ app.get("/auth/tiktok/callback", async (req, res) => {
     res.status(500).send("Authentication failed");
   }
 });
-// Function to exchange authorization code for access token
-async function exchangeCodeForAccessToken(code) {
-  try {
-    const response = await axios.post(
-      "https://open-api.tiktok.com/platform/oauth/access_token",
-      querystring.stringify({
-        client_id: process.env.TIKTOK_CLIENT_KEY,
-        client_secret: process.env.TIKTOK_CLIENT_SECRET,
-        code: code,
-        grant_type: "authorization_code",
-        redirect_uri: redirectURI,
-      })
-    );
 
-    return response.data.access_token;
-  } catch (error) {
-    throw new Error(`Error exchanging code for access token: ${error.message}`);
-  }
-}
 app.get("/video/:username", async (req, res) => {
   const username = req.params.username;
   console.log(username);
